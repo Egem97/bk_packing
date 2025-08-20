@@ -1,0 +1,13 @@
+# FastAPI
+fastapi==0.104.1
+uvicorn==0.24.0
+
+# Database
+psycopg2-binary==2.9.9
+
+# JWT Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Load testing dependencies
+aiohttp==3.9.1

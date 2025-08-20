@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  pipeline-postgres:
+    image: postgres:15
+    container_name: pipeline-postgres
+    environment:
+      POSTGRES_DB: pipeline_db
+      POSTGRES_USER: pipeline_user
+      POSTGRES_PASSWORD: pipeline_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pipeline_user -d pipeline_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: jobs/Dockerfile
+    container_name: pipeline-scheduler
+    network_mode: host
+    depends_on:
+      pipeline-postgres:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: "1"
+      ENVIRONMENT: "production"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: pipeline-api
+    network_mode: host
+    depends_on:
+      pipeline-postgres:
+        condition: service_healthy
+    ports:
+      - "8001:8000"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      ENVIRONMENT: "production"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local

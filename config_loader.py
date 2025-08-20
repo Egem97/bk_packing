@@ -1,18 +1,30 @@
 import yaml
+import os
 
 class Config:
     def __init__(self, data):
         self._data = data or {}
+        self._environment = os.getenv('ENVIRONMENT', 'development')
 
     def get_database_url(self):
         db = self._data.get('database', {})
         if not db:
             return None
+        
         user = db.get('user')
         password = db.get('password')
-        host = db.get('host', 'pipeline-postgres')
-        port = db.get('port', 5432)
         name = db.get('name', 'pipeline_db')
+        
+        # Detectar entorno y usar configuración apropiada
+        if self._environment == 'production':
+            # En VPS: usar localhost y puerto 5433
+            host = 'localhost'
+            port = 5433
+        else:
+            # En desarrollo local: usar hostname del contenedor
+            host = db.get('host', 'pipeline-postgres')
+            port = db.get('port', 5432)
+        
         return f"postgresql://{user}:{password}@{host}:{port}/{name}"
 
     def get_api_config(self):

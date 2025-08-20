@@ -19,7 +19,16 @@ def load_config():
 def get_database_config():
     """Get database configuration from config.yaml"""
     config = load_config()
-    return config.get('database', {})
+    db_config = config.get('database', {})
+    
+    # Detectar entorno y ajustar configuración
+    environment = os.getenv('ENVIRONMENT', 'development')
+    if environment == 'production':
+        # En VPS: usar localhost y puerto 5433
+        db_config['host'] = 'localhost'
+        db_config['port'] = 5433
+    
+    return db_config
 
 def get_microsoft_graph_config():
     """Get Microsoft Graph API configuration from config.yaml"""

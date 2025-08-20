@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # Database settings
-    database_url: str = "postgresql://pipeline_user:pipeline_password@postgres:5432/pipeline_db"
+    database_url: str = "postgresql://pipeline_user:pipeline_pass@pipeline-postgres:5432/pipeline_db"
 
     # API settings
     api_title: str = "Pipeline Data API"

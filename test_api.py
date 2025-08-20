@@ -4,7 +4,7 @@ import json
 import requests
 
 
-BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8001")
+BASE_URL = os.getenv("API_BASE_URL", "http://34.136.15.241:8001")
 
 
 def login(username: str = "admin", password: str = "admin123") -> str:
